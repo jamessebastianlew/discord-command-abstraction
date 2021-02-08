@@ -1,10 +1,10 @@
 # adjusting the path
 import sys
-from pathlib import Path
-sys.path.append(str(Path('.') / 'handlers'))
+from settings import TOKEN, PREFIX, ROOT_PATH
+
+sys.path.append(str(ROOT_PATH / 'scripts' / 'handlers'))
 
 # imports
-from settings import TOKEN, PREFIX
 from message_handler import MessageHandler
 import discord
 
@@ -15,6 +15,7 @@ async def talk(user_message, msg):
     await user_message.delete()
     await user_message.channel.send(msg)
 
+
 class MyClient(discord.Client):
     async def on_ready(self):
         print(f'Logged on as {self.user}!')
@@ -23,7 +24,7 @@ class MyClient(discord.Client):
         if not message.content.startswith(PREFIX):
             return
 
-        arguments = message.content[len(PREFIX) + 1:].split()
+        arguments = message.content[len(PREFIX):].split()
         await main_message_handler.run_handlers(message, arguments)
 
 

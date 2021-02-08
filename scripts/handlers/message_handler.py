@@ -1,7 +1,6 @@
 import asyncio
 from command_pattern import CommandPattern
 
-
 """
 message handler has three main functions
 
@@ -43,7 +42,7 @@ message_handler = MessageHandler()
 
 ...
 
-@client.createHandler('word <variable> something <other_variable>')
+@client.createHandler(r'say <name>')
 async def function_name(message, variable, other_variable):
     await do_something()
 """
