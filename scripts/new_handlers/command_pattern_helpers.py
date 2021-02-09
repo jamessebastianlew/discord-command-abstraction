@@ -1,3 +1,5 @@
+from command_pattern_constants import *
+
 # invisible helper functions
 def get_end_bracket(pattern, start, open_char, close_char):
     '''
@@ -23,6 +25,59 @@ def get_end_bracket(pattern, start, open_char, close_char):
     return None
 
 
+def is_group_unit(unit):
+    '''
+    returns True if the unit is a capturable group
+    and False otherwise
+    '''
+    return unit.startswith(TYPE_SPEC_OPEN)
+
+
+def get_unit_type_spec(unit):
+    '''
+    returns the type specifier of the group if the unit has one
+    otherwise returns None
+    '''
+    if not is_group_unit(unit):
+        return None
+
+    end = unit.get_end_bracket(unit, 0, TYPE_SPEC_OPEN, TYPE_SPEC_CLOSE)
+    return unit[:end + 1]
+
+
+def get_type_spec_pair(type_spec):
+    stripped_spec = type_spec[1:-1]
+    split_spec = stripped_spec.split(TYPE_SPEC_SEP)
+    
+    if len(split_spec) == 2:
+        return tuple(split_spec)
+
+    return 
+
+
+
+        
+
+
+def get_type_spec_type(type_spec):
+    if not TYPE_SPEC_SEP in type_spec:
+        return None
+
+    return type_spec.split(TYPE_SPEC_SEP)[0]
+
+
+def get_type_spec_name(type_spec):
+    if not TYPE_SPEC_SEP in type_spec:
+        return 
+
+
+def get_unit_expression(unit):
+    if not is_group_unit(unit):
+        return unit
+
+
+
+    
 def split_units(pattern):
     '''
     returns a list of the function split by units
@@ -60,4 +115,3 @@ def split_units(pattern):
             process_start = next_bracket
 
     return output_units
-

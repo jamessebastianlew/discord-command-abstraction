@@ -1,10 +1,5 @@
 import re
-
-TYPE_SPEC_OPEN = '<'
-TYPE_SPEC_CLOSE = '>'
-TYPE_SPEC_SEP = ':'
-PATT_SPEC_OPEN = '('
-PATT_SPEC_CLOSE = ')'
+from command_pattern_helpers import split_unit, get_unit_type_spec
 
 """
 
@@ -43,24 +38,9 @@ class CommandPattern:
         
         pattern_groups = []
         for unit in pattern_units:
-            if not unit.startswith(TYPE_SPEC_OPEN):
-                continue
-
-            # if its a group get the type specifier
-            type_spec_end = get_end_bracket(unit, 0,
-                    TYPE_SPEC_OPEN, TYPE_SPEC_CLOSE)
-            type_spec = unit[:type_spec_end + 1]
-
-            # start a new group object
-            group = {}
-            assert type_spec.count(TYPE_SPEC_SEP) < 2
-            if TYPE_SPEC_SEP in type_spec:
-
-
-            if group
-
-
-
+            group = get_unit_group(unit)
+            if group is not None:
+                pattern_groups.append(group)
 
 
     @staticmethod
