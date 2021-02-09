@@ -1,4 +1,3 @@
-import re
 from command import Command
 
 """

@@ -1,3 +1,5 @@
+from command_pattern import CommandPattern
+
 """
 must have:
 
@@ -15,8 +17,15 @@ class Command:
 
 
     def matches(self, message):
-        content = self.message.content
-        if self.command_pattern.matches(message.content):
+        return self.command_pattern.matches(message.content)
+
+
+    async def run_handler(self, context, message):
+        pattern_args = self.command_pattern.get_args(message.content)
+        await self.handler_function(context, message, **pattern_args)
+
+
+
 
 
 
