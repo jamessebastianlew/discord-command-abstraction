@@ -8,13 +8,18 @@ command_obj.run_handler(context, message)
 
 """
 
-class Command():
+class Command:
     def __init__(self, command_pattern, handler_function):
-        self.command_pattern = 
+        self.command_pattern = CommandPattern(command_pattern)
+        self.handler_function = handler_function
 
 
     def matches(self, message):
-        re.fullmatch(
+        content = self.message.content
+        if self.command_pattern.matches(message.content):
+
+
+
 
 
 
