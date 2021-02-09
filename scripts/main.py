@@ -1,11 +1,6 @@
-# adjusting the path
-import sys
-from settings import TOKEN, PREFIX, ROOT_PATH
-
-sys.path.append(str(ROOT_PATH / 'scripts' / 'handlers'))
-
 # imports
-from message_handler import MessageHandler
+from settings import TOKEN, PREFIX
+from handlers.message_handler import MessageHandler
 import discord
 
 main_message_handler = MessageHandler()
