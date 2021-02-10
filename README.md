@@ -9,7 +9,7 @@ This API aims to ease the process of creating easily extendable and maintainable
 - Message handler - the main feature of the Discord Command Abstraction APIis to have an easy way to recognise messages that are meant for your bot. This is done through our MessageHandler class (examples below)
 - Capable of creating multiple message handlers (meaning you can seperate message handlers into seperate files) and seperate logic into easy to read and easy to maintain modules of code.
 
-example main.py file:
+example main.py file (note the new handlers can be found in scripts/new\_handlers and have not yet replaced the current message handlers):
 ```py
 from settings import TOKEN, PREFIX
 from handlers.message_handler import MessageHandler
@@ -65,7 +65,7 @@ client.run(TOKEN)
 
 In order to make this API even more versatile, we have decided to add advanced pattern (to recognise discord commands from the chat) matching using regex!
 
-Commands such as 'say \<string:var\_name\>([abc]+)' for example, will match any command tat comprises of "say " followed by a word only containing letters a, b, or c.
+Command patterns such as 'say \<string:var\_name\>([abc]+)', for example, will match any command that comprises of "say " followed by a word only containing letters a, b, or c and pass that word as (converted to string) to your handler function.
 
 Features:
 - regex pattern matching
