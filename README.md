@@ -6,7 +6,7 @@ This API aims to ease the process of creating easily extendable and maintainable
 
 ## Current API Features
 
-- Message handler - the main feature of the Discord Command Abstraction APIis to have an easy way to recognise messages that are meant for your bot. This is done through our MessageHandler class (examples below)
+- Message handler - the main feature of the Discord Command Abstraction API is to have an easy way to recognise messages that are meant for your bot. This is done through our MessageHandler class (examples below)
 - Capable of creating multiple message handlers (meaning you can seperate message handlers into seperate files) and seperate logic into easy to read and easy to maintain modules of code.
 
 example main.py file (note the new handlers can be found in scripts/new\_handlers and have not yet replaced the current message handlers):
@@ -32,7 +32,7 @@ message_handler = MessageHandler()
 # 'say 123"
 
 @message_handler.create_handler('say <string:var_name>')
-async def say_handler(user_message, var_name):
+async def printword_handler(user_message, var_name):
     await user_message.delete()
     await user_message.channel.send(msg)
 
