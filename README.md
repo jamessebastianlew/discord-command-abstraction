@@ -75,7 +75,7 @@ Features:
 example use (note the new handlers can be found in scripts/new\_handlers and have not yet replaced the current message handlers):
 ```py
 from settings import TOKEN, PREFIX
-from handlers.message_handler import MessageHandler
+from handlers.command_handler import CommandHandler
 import discord
 
 # create as many message handlers as you want!
@@ -97,7 +97,7 @@ class MyClient(discord.Client):
 
     async def on_message(self, message):
         # this is the only line you need to run the handlers
-        await message_handler.run_handlers(self, message)
+        await command_handler.run_handlers(self, message)
 
 client = MyClient()
 client.run(TOKEN)
