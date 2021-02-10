@@ -1,5 +1,7 @@
 import re
-from command_pattern_helpers import split_unit, get_unit_type_spec
+from command_pattern_helpers import split_units, get_unit_expression, get_unit_group
+from command_pattern_group import Group
+from test_func import test_func
 
 """
 
@@ -38,7 +40,7 @@ class CommandPattern:
         
         pattern_groups = []
         for unit in pattern_units:
-            group = get_unit_group(unit)
+            group = get_unit_group(group)
             if group is not None:
                 pattern_groups.append(group)
 
@@ -46,6 +48,10 @@ class CommandPattern:
     @staticmethod
     def process_expression(pattern):
         pattern_units = split_units(pattern)
+        list_unit_expressions = map(get_unit_expression, pattern_units)
+        return ''.join(list_unit_expressions)
+
+
 
 
     def __init__(self, pattern):

@@ -1,5 +1,6 @@
 # TYPE_SPEC and PATT_SPEC
 from command_pattern_constants import *
+from test_func import test_func
 
 # invisible helper functions
 def get_end_bracket(pattern, start, open_char, close_char):
@@ -31,6 +32,20 @@ def is_valid_literal(unit):
 
 
 def is_valid_unit(unit):
+    '''
+    takes in a potentially invalid unit
+    return True if the unit is valid otherwise false
+
+    examples of valid units:
+        <int:var_name>(\w+)
+        hello
+        <string:var_name>(\d+)
+
+    examples of invalid units:
+        &boop
+        <poop:var_name>(\w+)
+        <int:&seijfp>(\w+)
+    '''
     # unit literals must only contain letters and numbers
     if not unit.startswith(TYPE_SPEC_OPEN):
         return is_valid_literal(unit)
@@ -60,7 +75,7 @@ def is_valid_unit(unit):
 
     patt_spec = unit[end_type_spec + 1:]
     # unit variables must have a valid pattern specifier
-    if not patt_spec[0] == PATT_SPEC_OPEN not patt_spec[-1] == PATT_SPEC_CLOSE:
+    if not patt_spec[0] == PATT_SPEC_OPEN or not patt_spec[-1] == PATT_SPEC_CLOSE:
         return False
 
     # CONT: patterns must have valid regex?
@@ -137,16 +152,14 @@ def get_unit_expression(unit):
     # <var_type:var_name>(pattern) to (?P<var_name>pattern)
     type_spec_pair = get_type_spec_pair(unit)
     patt_spec = get_patt_spec(unit)
+    patt_spec_inner = patt_spec[1:-1]
 
-#CONT
-    
-
-    pass
+    return f'(?P<{type_spec_pair[1]}>{patt_spec_inner})'
     
 
 def split_units(pattern):
     '''
-    returns a list of the function split by units
+    returns a list of the function split by units potentially not valid
 
     e.g.
 
@@ -177,7 +190,7 @@ def split_units(pattern):
             if not next_bracket:
                 next_bracket = len(pattern)
 
-            output_units.append(pattern[process_start] : next_bracket)
+            output_units.append(pattern[process_start:next_bracket])
             process_start = next_bracket
 
     for unit in output_units:
@@ -185,4 +198,25 @@ def split_units(pattern):
 
     return output_units
 
+def get_unit_group(unit):
+    '''
+    considers a VALID unit as an argument
+    returns None if the unit is not a valid 'group unit'
+    otherwise returns a group object
 
+    e.g.
+
+    returns Group('var_name', static=True, type_name='int')
+    '''
+    type_name, name = get_type_spec_pair(unit)
+    if type_spec_pair[0] is None:
+        return Group(name, static=False, type_name='')
+    return Group(name, static=True, type_name=type_name)
+
+
+def main():
+    first_unit = r'<int:person>(\w+)'
+    test_func([first_unit], get_unit_group)
+
+if __name__ == '__main__':
+    main()
