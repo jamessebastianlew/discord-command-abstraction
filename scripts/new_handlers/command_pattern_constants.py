@@ -11,8 +11,13 @@ VALID_LITERAL_CHARS = set(
     " "
 )
 
+# type spec string to type converters/
+# constructors
 TYPE_SPEC_TYPES = {
     'string': str,
     'int': int,
     'float': float
 }
+
+# default type constructor
+DEFAULT_TYPE = str
