@@ -1,5 +1,5 @@
-from command_pattern_constants import TYPE_SPEC_TYPES as TYPES
-from command_pattern_constants import DEFAULT_TYPE
+from .command_pattern_constants import TYPE_SPEC_TYPES as TYPES
+from .command_pattern_constants import DEFAULT_TYPE
 
 '''
 simple group class

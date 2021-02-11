@@ -1,6 +1,6 @@
 # TYPE_SPEC and PATT_SPEC
-from command_pattern_constants import *
-from command_pattern_group import Group
+from .command_pattern_constants import *
+from .command_pattern_group import Group
 
 # invisible helper functions
 def get_end_bracket(pattern: str, start: int, open_char: str, close_char: str):

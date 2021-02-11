@@ -1,6 +1,6 @@
 import re
 import sys
-import command_pattern_helpers as CPHelpers
+from . import command_pattern_helpers as CPHelpers
 """
 
 patterns:
@@ -94,14 +94,14 @@ class CommandPattern:
         if match_obj is None:
             return None
 
-        output_obj = {}
+        match_args = {}
         for group in self.pattern_groups:
             try:
-                output_obj[group.name] = group.type(match_obj.group(group.name))
+                match_args[group.name] = group.type(match_obj.group(group.name))
             except:
                 raise Exception('Unexpected error: Likely converting group type')
 
-        return output_obj
+        return match_args
 
 
     def __init__(self, pattern):

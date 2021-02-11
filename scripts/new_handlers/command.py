@@ -1,4 +1,5 @@
-from command_pattern import CommandPattern
+from .command_pattern import CommandPattern
+import asyncio
 
 """
 must have:
@@ -17,18 +18,17 @@ class Command:
 
 
     def matches(self, message):
-        return self.command_pattern.matches(message.content)
+        '''
+        returns True if the content of the message matches the command pattern
+        otherwise returns False
+        '''
+        return self.command_pattern.get_match(message.content) is not None
 
 
     async def run_handler(self, context, message):
-        pattern_args = self.command_pattern.get_args(message.content)
-        await self.handler_function(context, message, **pattern_args)
-
-
-
-
-
-
-
-
-
+        '''
+        runs the user defined handler according to the arguments
+        of the message that match the pattern
+        '''
+        match_args = self.command_pattern.get_match(message.content)
+        await self.handler_function(context, message, **match_args)
