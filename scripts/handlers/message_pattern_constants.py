@@ -11,6 +11,13 @@ VALID_LITERAL_CHARS = set(
     " "
 )
 
+VALID_VARNAME_CHARS = set(
+    "abcdefghijklmnopqrstuvwxyz" +
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ" + 
+    "0123456789_"
+)
+
+
 # type spec string to type converters/
 # constructors
 TYPE_SPEC_TYPES = {

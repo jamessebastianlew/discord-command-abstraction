@@ -1,6 +1,6 @@
 # TYPE_SPEC and PATT_SPEC
-from .command_pattern_constants import *
-from .command_pattern_group import Group
+from .message_pattern_constants import *
+from .message_pattern_group import Group
 
 # invisible helper functions
 def get_end_bracket(pattern: str, start: int, open_char: str, close_char: str):
@@ -30,6 +30,10 @@ def get_end_bracket(pattern: str, start: int, open_char: str, close_char: str):
 def is_valid_literal(unit: str):
     return all(char in VALID_LITERAL_CHARS for char in unit)
 
+def is_valid_varname(varname: str):
+    if len(varname) == 0 or varname[0].isdigit():
+        return varname
+    return all(char in VALID_VARNAME_CHARS for char in varname)
 
 def is_valid_unit(unit: str):
     '''
@@ -64,10 +68,9 @@ def is_valid_unit(unit: str):
 
     # and the words between can only consist of valid literal characters
     type_spec_words = type_spec[1:-1].split(TYPE_SPEC_SEP)
-    if not all(is_valid_literal(word) for word in type_spec_words):
+    if not is_valid_varname(type_spec_words[-1]):
         return False
 
-    
     # and if the unit has a type it must be in the TYPE_SPEC_TYPES dictionary
     if len(type_spec_words) == 2 and type_spec_words[0] not in TYPE_SPEC_TYPES:
         return False

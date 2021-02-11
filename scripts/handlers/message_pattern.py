@@ -1,6 +1,6 @@
 import re
 import sys
-from . import command_pattern_helpers as CPHelpers
+from . import message_pattern_helpers as CPHelpers
 """
 
 patterns:
@@ -24,12 +24,12 @@ patterns:
     ({regex_pattern}) is the pattern specifier (PATT_SPEC)
 
 functionality:
-    command_pattern = CommandPattern(pattern)
-    command_pattern.get_match(text)
+    message_pattern = MessagePattern(pattern)
+    message_pattern.get_match(text)
 
 """
 
-class CommandPattern:
+class MessagePattern:
     @staticmethod
     def process_groups(pattern):
         '''
@@ -55,7 +55,7 @@ class CommandPattern:
     @staticmethod
     def process_regex(pattern):
         '''
-        changes a given command pattern into its regex
+        changes a given message pattern into its regex
         counterpart
 
         returns a string representing the output regex pattern
@@ -105,5 +105,5 @@ class CommandPattern:
 
 
     def __init__(self, pattern):
-        self.pattern_groups = CommandPattern.process_groups(pattern)
-        self.regex_obj = re.compile(CommandPattern.process_regex(pattern))
+        self.pattern_groups = MessagePattern.process_groups(pattern)
+        self.regex_obj = re.compile(MessagePattern.process_regex(pattern))

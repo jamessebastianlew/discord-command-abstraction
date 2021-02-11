@@ -1,14 +1,14 @@
-from .command import Command
+from .message_handler import MessageHandler
 
 """
 
-goal: use regex to make patternised commands
+goal: use regex to make patternised messages
 
 =========
 
 i.e.
 
-message_handler = CommandHandler(prefix=PREFIX)
+message_handler = MessageHandler(prefix=PREFIX)
 
 @message_handler.create_handler(r'word <var_type:var_name>(pattern)')
 async def function_name(context, message, var_name):
@@ -22,7 +22,7 @@ class Client(discord.Client):
 =========
 
 `context` represents the client object
-`message` represents the message
+`message` represents the discord.Message object
 `var_name` is specified in the pattern
 
 patterns will only match `expression` iff
@@ -31,28 +31,28 @@ pattern.fullmatch(expression)
 """
 
 
-class CommandHandler:
+class MessageHandlerContainer:
     def __init__(self, prefix=''):
         self.handlers = []
         self.prefix = prefix
 
     
-    def preprocess_pattern(self, command_pattern):
+    def preprocess_pattern(self, message_pattern):
         '''
-        adds prefix literal to the command pattern
-        and reurns it adjusted command pattern
+        adds prefix literal to the message pattern
+        and reurns it adjusted message pattern
         '''
-        return self.prefix + command_pattern
+        return self.prefix + message_pattern
 
-    def create_handler(self, command_pattern):
+    def create_handler(self, message_pattern):
         '''
         returns a decorator function which creates a handler and adds it
         to the self.handlers for later processing
         '''
-        command_pattern = self.preprocess_pattern(command_pattern)
+        message_pattern = self.preprocess_pattern(message_pattern)
         def add_handler_decorator(handler_function):
-            command = Command(command_pattern, handler_function)
-            self.handlers.append(command)
+            message_handler = MessageHandler(message_pattern, handler_function)
+            self.handlers.append(message_handler)
 
             return handler_function
         
@@ -63,7 +63,7 @@ class CommandHandler:
         '''
         asynchronous function runs all handlers against a message
         '''
-        for command in self.handlers:
-            if command.matches(message):
-                await command.run_handler(context, message)
+        for message_handler in self.handlers:
+            if message_handler.matches(message):
+                await message_handler.run_handler(context, message)
 
