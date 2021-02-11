@@ -1,12 +1,12 @@
 # imports
 from settings import TOKEN, PREFIX
-from handlers.message_handler import MessageHandler
+from handlers.command_handler import CommandHandler
 import discord
 
-main_message_handler = MessageHandler()
+command_handler = CommandHandler(prefix=PREFIX)
 
-@main_message_handler.create_handler('say <string:msg>')
-async def talk(user_message, msg):
+@command_handler.create_handler('say <string:msg>(.*)')
+async def talk(context, user_message, msg):
     await user_message.delete()
     await user_message.channel.send(msg)
 
@@ -16,12 +16,9 @@ class MyClient(discord.Client):
         print(f'Logged on as {self.user}!')
 
     async def on_message(self, message):
-        if not message.content.startswith(PREFIX):
-            return
-
-        arguments = message.content[len(PREFIX):].split()
-        await main_message_handler.run_handlers(message, arguments)
+        await command_handler.run_handlers(self, message)
 
 
 client = MyClient()
 client.run(TOKEN)
+
