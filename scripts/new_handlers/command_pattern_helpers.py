@@ -119,6 +119,9 @@ def get_type_spec_pair(unit: str):
     '''
     type_spec = get_unit_type_spec(unit)
 
+    if type_spec is None:
+        return None
+
     stripped_spec = type_spec[1:-1]
     split_spec = stripped_spec.split(TYPE_SPEC_SEP)
     
@@ -138,10 +141,10 @@ def get_patt_spec(unit: str):
     
 
 
-def get_unit_expression(unit: str):
+def get_unit_regex(unit: str):
     '''
     considers a VALID unit as an argument
-    returns the unit converted into a expression
+    returns the unit converted into a regular expression
     '''
 
     # literals are already expressions
@@ -209,7 +212,12 @@ def get_unit_group(unit: str):
 
     returns Group('var_name', static=True, type_name='int')
     '''
-    type_name, name = get_type_spec_pair(unit)
+    type_spec = get_type_spec_pair(unit)
+    if type_spec is None:
+        return None
+
+    type_name, name = type_spec
     if type_name is None:
         return Group(name, static=False, type_name='')
+
     return Group(name, static=True, type_name=type_name)
