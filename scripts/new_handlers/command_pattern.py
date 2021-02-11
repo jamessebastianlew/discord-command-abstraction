@@ -1,8 +1,6 @@
 import re
-from command_pattern_helpers import split_units, get_unit_expression, get_unit_group
-from command_pattern_group import Group
-from test_func import test_func
-
+import sys
+import command_pattern_helpers as CPHelpers
 """
 
 patterns:
@@ -13,11 +11,10 @@ patterns:
     processes into
 
     pattern_groups = [
-        {
-            'static': True,
-            'type': var_type,
-            'name': var_name
-        }
+        Group
+            static: True,
+            type: var_type,
+            name: var_name
     ]
 
     which captured groups can refer to for
@@ -28,32 +25,94 @@ patterns:
 
 functionality:
     command_pattern = CommandPattern(pattern)
-    command_pattern.matches(expr)
-    command_pattern.get_args(expr)
+    command_pattern.get_match(text)
 
 """
 
 class CommandPattern:
     @staticmethod
     def process_groups(pattern):
-        pattern_units = split_units(pattern)
+        '''
+        outputs a list of Group objects for each
+        variable input in the pattern
+
+        e.g.
+
+        pattern = r'say <string:something>(\w+)'
+        returns [ Group('something', static=True, type_name = 'string') ]
+        '''
+        pattern_units = CPHelpers.split_units(pattern)
         
         pattern_groups = []
         for unit in pattern_units:
-            group = get_unit_group(group)
+            group = CPHelpers.get_unit_group(unit)
             if group is not None:
                 pattern_groups.append(group)
+        
+        return pattern_groups
 
 
     @staticmethod
-    def process_expression(pattern):
-        pattern_units = split_units(pattern)
-        list_unit_expressions = map(get_unit_expression, pattern_units)
+    def process_regex(pattern):
+        '''
+        changes a given command pattern into its regex
+        counterpart
+
+        returns a string representing the output regex pattern
+        '''
+        pattern_units = CPHelpers.split_units(pattern)
+        list_unit_expressions = map(CPHelpers.get_unit_regex, pattern_units)
         return ''.join(list_unit_expressions)
 
 
+    def get_match(self, text):
+        '''
+        considers a string `text` and compares it to the
+        regular expression `self.regex_obj`
+
+        returns an object with all the groups mapped to their
+        appropriate values (if convertible)
+
+        otherwise returns None 
+
+        in the case of a conversion error raises an error
+
+        e.g.
+
+        pattern = r'multiply <int:a>(\d+) <int:b>(\d+)'
+        text = 'multiply 10 11'
+
+        returns 
+        {
+            'a': 10,
+            'b': 11
+        }
+
+        
+        '''
+        match_obj = self.regex_obj.fullmatch(text)
+        if match_obj is None:
+            return None
+
+        output_obj = {}
+        for group in self.pattern_groups:
+            try:
+                output_obj[group.name] = group.type(match_obj.group(group.name))
+            except:
+                raise Exception('Unexpected error: Likely converting group type')
+
+        return output_obj
 
 
     def __init__(self, pattern):
         self.pattern_groups = CommandPattern.process_groups(pattern)
-        self.expression = CommandPattern.process_expression(pattern)
+        self.regex_obj = re.compile(CommandPattern.process_regex(pattern))
+
+
+if __name__ == '__main__':
+    compat = CommandPattern(r'say <string:something>(\w+)')
+    print(compat.pattern_groups)
+    print(compat.get_match('say poop'))
+
+
+
