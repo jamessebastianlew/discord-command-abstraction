@@ -7,7 +7,8 @@ PATT_SPEC_CLOSE = ')'
 VALID_LITERAL_CHARS = set(
     "abcdefghijklmnopqrstuvwxyz" +
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ" + 
-    "0123456789_"
+    "0123456789_" +
+    " "
 )
 
 TYPE_SPEC_TYPES = {

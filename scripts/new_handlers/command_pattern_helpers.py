@@ -1,9 +1,9 @@
 # TYPE_SPEC and PATT_SPEC
 from command_pattern_constants import *
-from test_func import test_func
+from command_pattern_group import Group
 
 # invisible helper functions
-def get_end_bracket(pattern, start, open_char, close_char):
+def get_end_bracket(pattern: str, start: int, open_char: str, close_char: str):
     '''
     returns the matching end bracket to the open brackets
     starting at `start`
@@ -27,11 +27,11 @@ def get_end_bracket(pattern, start, open_char, close_char):
     return None
 
 
-def is_valid_literal(unit):
+def is_valid_literal(unit: str):
     return all(char in VALID_LITERAL_CHARS for char in unit)
 
 
-def is_valid_unit(unit):
+def is_valid_unit(unit: str):
     '''
     takes in a potentially invalid unit
     return True if the unit is valid otherwise false
@@ -84,7 +84,7 @@ def is_valid_unit(unit):
 
 
 # unit helpers
-def is_group_unit(unit):
+def is_group_unit(unit: str):
     '''
     considers a VALID unit as an argument
     returns True if the unit is a capturable group
@@ -93,7 +93,7 @@ def is_group_unit(unit):
     return unit.startswith(TYPE_SPEC_OPEN)
 
 
-def get_unit_type_spec(unit):
+def get_unit_type_spec(unit: str):
     '''
     considers a VALID unit as an argument
 
@@ -104,11 +104,11 @@ def get_unit_type_spec(unit):
     if not is_group_unit(unit):
         return None
 
-    end = unit.get_end_bracket(unit, 0, TYPE_SPEC_OPEN, TYPE_SPEC_CLOSE)
+    end = get_end_bracket(unit, 0, TYPE_SPEC_OPEN, TYPE_SPEC_CLOSE)
     return unit[:end + 1]
 
 
-def get_type_spec_pair(unit):
+def get_type_spec_pair(unit: str):
     '''
     considers a VALID unit as an argument
 
@@ -128,7 +128,7 @@ def get_type_spec_pair(unit):
     return (None, *split_spec)
 
 
-def get_patt_spec(unit):
+def get_patt_spec(unit: str):
     '''
     considers a VALID unit as an argument
     returns the pattern specifier
@@ -138,7 +138,7 @@ def get_patt_spec(unit):
     
 
 
-def get_unit_expression(unit):
+def get_unit_expression(unit: str):
     '''
     considers a VALID unit as an argument
     returns the unit converted into a expression
@@ -157,7 +157,7 @@ def get_unit_expression(unit):
     return f'(?P<{type_spec_pair[1]}>{patt_spec_inner})'
     
 
-def split_units(pattern):
+def split_units(pattern: str):
     '''
     returns a list of the function split by units potentially not valid
 
@@ -174,20 +174,21 @@ def split_units(pattern):
     process_start = 0
     while process_start < len(pattern):
         if pattern[process_start] == TYPE_SPEC_OPEN:
-            end_bracket_pos = get_end_bracket(pattern, process_sart,
+            end_type_spec_ind = get_end_bracket(pattern, process_start,
                     TYPE_SPEC_OPEN, TYPE_SPEC_CLOSE)
 
-            assert end_bracket_pos < len(pattern)
-            assert end_bracket_pos == PATT_SPEC_OPEN
+            assert end_type_spec_ind + 1 < len(pattern)
+            assert pattern[end_type_spec_ind + 1] == PATT_SPEC_OPEN
 
-            start_bracket_pos = get_bracket_start
-            output_units.append(pattern[process_start : end_bracket_pos + 1])
-            process_start = end_bracket_pos + 1
+            end_patt_spec_ind = get_end_bracket(pattern, end_type_spec_ind + 1,
+                    PATT_SPEC_OPEN, PATT_SPEC_CLOSE)
+            output_units.append(pattern[process_start : end_patt_spec_ind + 1])
+            process_start = end_patt_spec_ind + 1
 
         else:
-            next_bracket = pattern.index(TYPE_SPEC_OPEN, process_start)
-
-            if not next_bracket:
+            try:
+                next_bracket = pattern.index(TYPE_SPEC_OPEN, process_start)
+            except:
                 next_bracket = len(pattern)
 
             output_units.append(pattern[process_start:next_bracket])
@@ -198,7 +199,7 @@ def split_units(pattern):
 
     return output_units
 
-def get_unit_group(unit):
+def get_unit_group(unit: str):
     '''
     considers a VALID unit as an argument
     returns None if the unit is not a valid 'group unit'
@@ -209,14 +210,6 @@ def get_unit_group(unit):
     returns Group('var_name', static=True, type_name='int')
     '''
     type_name, name = get_type_spec_pair(unit)
-    if type_spec_pair[0] is None:
+    if type_name is None:
         return Group(name, static=False, type_name='')
     return Group(name, static=True, type_name=type_name)
-
-
-def main():
-    first_unit = r'<int:person>(\w+)'
-    test_func([first_unit], get_unit_group)
-
-if __name__ == '__main__':
-    main()
