@@ -30,7 +30,6 @@ class MessageHandler:
         runs the user defined handler according to the arguments
         of the message that match the pattern
         '''
-        print(message)
         match_args = self.message_pattern.get_match(message.content)
         await self.handler_function(context, message, **match_args)
 
