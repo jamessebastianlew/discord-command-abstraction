@@ -4,101 +4,99 @@ A main part of many Discord bots is communicating with the bot via commands in D
 
 This API aims to ease the process of creating easily extendable and maintainable commands through an abstraction.
 
-## Current API Features
+This repo contains two main projects:
+- an advanced message pattern matching API (The Default API)
+- a simple message pattern matching API (Simple Handler API)
 
-- Message handler - the main feature of the Discord Command Abstraction API is to have an easy way to recognise messages that are meant for your bot. This is done through our MessageHandler class (examples below)
-- Capable of creating multiple message handlers (meaning you can seperate message handlers into seperate files) and seperate logic into easy to read and easy to maintain modules of code.
+## The Default API
 
-example main.py file:
-```py
-from settings import TOKEN, PREFIX
-from handlers.message_handler import MessageHandler
-import discord
+In order to make this API even more versatile, we have decided to add advanced pattern matching using regex (to recognise discord messages which match the pattern)!
 
-# create as many message handlers as you want!
-# we are creating just one
-message_handler = MessageHandler()
+Message patterns such as `say <string:var_name>([abc]+)`, for example, will match any command that comprises of "say " followed by a word only containing letters a, b, or c and pass that word as (converted to string) to your handler function.
 
-
-# the pattern 'say <string:var_name>' will respond to
-# patterns that match 'say' followed by a string word
-# the `string` in <string:var_name> is the type that
-# the argument will be converted to and the `var_name`
-# in <string:var_name> is the argument that will be
-# passed into your function
-
-# this message handler will respond to messages like
-# 'say hello"
-# 'say 123"
-
-@message_handler.create_handler('say <string:var_name>')
-async def printword_handler(user_message, var_name):
-    await user_message.delete()
-    await user_message.channel.send(msg)
-
-# notice that arguments `a` and `b` are translated into integers
-@message_handler.create_handler('multiply <int:a> <int:b>')
-async def multiply_handler(user_message, a, b):
-    await user_message.channel.send(str(a * b))
-
-
-class MyClient(discord.Client):
-    async def on_ready(self):
-        print(f'Logged on as {self.user}!')
-
-    async def on_message(self, message):
-        if not message.content.startswith(PREFIX):
-            return
-
-        arguments = message.content[len(PREFIX):].split()
-        
-        # all you need to do to run the handlers is to
-        # await this function with the arguments in the message
-        # it will automatically check to see if any commands match
-        await message_handler.run_handlers(message, arguments)
-
-client = MyClient()
-client.run(TOKEN)
-```
-
-## The upcoming API
-
-In order to make this API even more versatile, we have decided to add advanced pattern (to recognise discord commands from the chat) matching using regex!
-
-Command patterns such as 'say \<string:var\_name\>([abc]+)', for example, will match any command that comprises of "say " followed by a word only containing letters a, b, or c and pass that word as (converted to string) to your handler function.
+NOTE: a 'handler' refers to a function which handles the bots processing of a message
 
 Features:
 - regex pattern matching
 - type conversion
 - builtin prefix checking
+- simple and easy to use
+- modular - easy to detach from your bot and seperate into files
+- make as many handlers and handler containers as you want!
 
-example use (note the new handlers can be found in scripts/new\_handlers and have not yet replaced the current message handlers):
+example use:
 ```py
-from settings import TOKEN, PREFIX
-from handlers.command_handler import CommandHandler
 import discord
+from settings import TOKEN, PREFIX
 
-# create as many message handlers as you want!
-# we are creating just one
-command_handler = CommandHandler(prefix=PREFIX)
+# import the message handler container
+from handlers.message_handler_container import MessageHandlerContainer
 
+# make an instance
+# this container will hold all your message handler functions
+# and is able to process all the handlers in one go!
+message_handlers = MessageHandlerContainer(prefix=PREFIX)
 
-# format for variable arguments is as so:
-# <var_type:var_name>(regex pattern)
-@command_handler.create_handler(r'printword <string:var_name>(\w+)')
-async def say_handler(context, user_message, var_name):
-    # `context` represents the discord client
-    # `user_message` represents the message object (from discord.py API)
-    await user_message.channel.send(var_name)
+# create a handler function for a pattern using the .create_handler function!
+# the variables will be automatically passed to your function as arguments!
+#   e.g. the `msg` variable below which is in the pattern
+# the first two arguments `context` and `user_message` are the arguments
+# you pass to message_handlers.run_handlers!
+@message_handlers.create_handler('say <string:msg>(.*)')
+async def talk(context, user_message, msg):
+    await user_message.delete()
+    await user_message.channel.send(msg)
 
 class MyClient(discord.Client):
     async def on_ready(self):
         print(f'Logged on as {self.user}!')
 
     async def on_message(self, message):
-        # this is the only line you need to run the handlers
-        await command_handler.run_handlers(self, message)
+        # simply asynchronously await all running all the handlers you've made!
+        # NOTE: these two arguments will be passed to your handler function
+        #       as the first two arguments! you can replace `self` with anything
+        #       but `message` must be a discord.Message instance.
+        #       this is so you can pass any necessary information that you need.
+        await message_handlers.run_handlers(self, message)
+
 
 client = MyClient()
 client.run(TOKEN)
 ```
+
+## Simple Handler API Features
+
+This is the previous iteration of message handlers used a similar way of pattern matching except far simpler. Patterns consisted of literal (things that the user match exactly) and variable words (that can change based on use input) that MUST BE SPACE SEPERATED.
+
+examples:
+
+the pattern `'multiply <int:a> <int:b>'` will match messages such as `'multiply 123 2'` but not `'multiply  123 2'` (two spaces).
+the pattern `'say <string:msg>'` will match messages such as `'say hello'` but not `'say hello hi'` 
+
+example main file:
+```py
+import discord
+from settings import TOKEN, PREFIX
+from simple_handlers.message_handler_container import MessageHandlerContainer
+
+message_handlers = MessageHandlerContainer(prefix=PREFIX)
+
+# NOTE: the <string:msg> pattern will only match a SINGLE WORD
+#       all variables are space seperated
+@message_handlers.create_handler('say <string:msg>')
+async def talk(user_message, msg):
+    await user_message.channel.send(msg)
+
+
+class MyClient(discord.Client):
+    async def on_ready(self):
+        print(f'Logged on as {self.user}!')
+
+    async def on_message(self, message):
+        await message_handlers.run_handlers(message)
+
+
+client = MyClient()
+client.run(TOKEN)
+```
+

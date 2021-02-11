@@ -1,4 +1,3 @@
-# imports
 import discord
 from settings import TOKEN, PREFIX
 from handlers.message_handler_container import MessageHandlerContainer

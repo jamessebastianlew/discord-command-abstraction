@@ -63,6 +63,10 @@ class MessageHandlerContainer:
         '''
         asynchronous function runs all handlers against a message
         '''
+        # to not waste any computation time going through all the handlers
+        if not message.content.startswith(self.prefix):
+            return
+
         for message_handler in self.handlers:
             if message_handler.matches(message):
                 await message_handler.run_handler(context, message)
