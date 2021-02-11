@@ -12,7 +12,7 @@ This repo contains two main projects:
 
 In order to make this API even more versatile, we have decided to add advanced pattern matching using regex (to recognise discord messages which match the pattern)!
 
-Message patterns such as `say <string:var_name>([abc]+)`, for example, will match any command that comprises of "say " followed by a word only containing letters a, b, or c and pass that word as (converted to string) to your handler function.
+Message patterns such as `say <string:var_name>([abc]+)`, for example, will match any command that comprises of "say " followed by a word only containing letters a, b or c and pass that word (converted to string) to your handler function.
 
 NOTE: a 'handler' refers to a function which handles the bots processing of a message
 
